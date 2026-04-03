@@ -531,13 +531,13 @@ export default function App() {
 
   // ────────────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: C.pageBg, display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{ height: '100vh', background: C.pageBg, display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, sans-serif', overflow: 'hidden' }}>
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
       {/* Mini header row with title + clear button */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 16px 0', maxWidth: 1300, margin: '0 auto', width: '100%', boxSizing: 'border-box',
+        padding: '10px 24px 0', width: '100%', boxSizing: 'border-box',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 15, fontWeight: 900, color: C.navy, letterSpacing: '0.04em' }}>
@@ -565,8 +565,8 @@ export default function App() {
       </div>
 
       {/* Tabs row */}
-      <nav style={{ background: C.pageBg, paddingTop: 8, paddingLeft: 16, paddingRight: 16 }}>
-        <div style={{ display: 'flex', gap: 4, maxWidth: 1300, margin: '0 auto', overflowX: 'auto' }}>
+      <nav style={{ background: C.pageBg, paddingTop: 8, paddingLeft: 24, paddingRight: 24 }}>
+        <div style={{ display: 'flex', gap: 4, overflowX: 'auto' }}>
           {TABS.map(tab => {
             const isActive = activeTab === tab.id;
             return (
@@ -599,9 +599,10 @@ export default function App() {
 
       {/* ── Main ──────────────────────────────────────────────────────────── */}
       <main style={{
-        padding: '0 16px 20px', maxWidth: 1300,
-        margin: '0 auto', width: '100%', boxSizing: 'border-box',
+        flex: 1, padding: '0 24px 20px',
+        width: '100%', boxSizing: 'border-box',
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20,
+        minHeight: 0,
       }}>
 
         {/* Left — yellow panel */}
@@ -643,7 +644,7 @@ export default function App() {
         </div>
 
         {/* Right — big title + chart */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8, minHeight: 0 }}>
 
           {/* Large section title */}
           <div style={{ lineHeight: 1.05 }}>
