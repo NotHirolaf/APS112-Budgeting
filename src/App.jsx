@@ -139,12 +139,12 @@ const LineTooltip = ({ active, payload, label }) => {
 
 // ─── Input field ──────────────────────────────────────────────────────────────
 const Field = ({ label, value, onChange }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-    <label style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>{label}</label>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <label style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{label}</label>
     <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
       <span style={{
         background: C.navy, color: C.white,
-        padding: '8px 12px', fontSize: 14, fontWeight: 700,
+        padding: '10px 14px', fontSize: 18, fontWeight: 700,
         display: 'flex', alignItems: 'center',
       }}>$</span>
       <input
@@ -155,7 +155,7 @@ const Field = ({ label, value, onChange }) => (
         placeholder="0.00"
         style={{
           flex: 1, background: C.inputBg, border: 'none',
-          padding: '8px 10px', fontSize: 14, color: '#1a1a1a',
+          padding: '10px 12px', fontSize: 18, color: '#1a1a1a',
           fontFamily: 'monospace', outline: 'none', minWidth: 0,
         }}
       />
@@ -508,7 +508,7 @@ export default function App() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '16px 20px',
+        gap: '20px 24px',
       }}>
         {fields.map(field => (
           <Field
@@ -702,7 +702,7 @@ export default function App() {
                 <p style={{ color: '#6B8EAA', fontSize: 13 }}>Set your inputs and click Generate Graph</p>
               </div>
             ) : activeTab === 'costmodel' ? (
-              <ResponsiveContainer width="100%" height={280}>
+              <ResponsiveContainer width="100%" height="90%">
                 <LineChart data={committedModelData.slice(0, visibleCount)} margin={{ top: 8, right: 16, bottom: 24, left: 8 }}>
                   <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
                   <XAxis
@@ -751,15 +751,15 @@ export default function App() {
                 </LineChart>
               </ResponsiveContainer>
             ) : chartData.length > 0 ? (
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                <ResponsiveContainer width="100%" height={230}>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <ResponsiveContainer width="100%" height={260}>
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={65}
-                      outerRadius={95}
+                      innerRadius={80}
+                      outerRadius={115}
                       paddingAngle={2}
                       dataKey="value"
                       labelLine={false}
@@ -783,11 +783,11 @@ export default function App() {
                   </PieChart>
                 </ResponsiveContainer>
                 {/* Legend below donut */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 16px', paddingBottom: 4 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 24px', paddingBottom: 8 }}>
                   {chartData.map((d, i) => (
-                    <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span style={{ width: 10, height: 10, borderRadius: 2, background: CHART_COLORS[i % CHART_COLORS.length], flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: '#A8C4E0', fontWeight: 500 }}>{d.name}</span>
+                    <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 14, height: 14, borderRadius: 3, background: CHART_COLORS[i % CHART_COLORS.length], flexShrink: 0 }} />
+                      <span style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{d.name}</span>
                     </div>
                   ))}
                 </div>
