@@ -752,14 +752,14 @@ export default function App() {
               </ResponsiveContainer>
             ) : chartData.length > 0 ? (
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={360}>
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={80}
-                      outerRadius={115}
+                      innerRadius={110}
+                      outerRadius={155}
                       paddingAngle={2}
                       dataKey="value"
                       labelLine={false}
