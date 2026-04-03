@@ -531,7 +531,7 @@ export default function App() {
 
   // ────────────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: C.pageBg, display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: C.pageBg, display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: 'system-ui, sans-serif' }}>
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
       {/* Mini header row with title + clear button */}
@@ -599,7 +599,7 @@ export default function App() {
 
       {/* ── Main ──────────────────────────────────────────────────────────── */}
       <main style={{
-        flex: 1, padding: '0 16px 20px', maxWidth: 1300,
+        padding: '0 16px 20px', maxWidth: 1300,
         margin: '0 auto', width: '100%', boxSizing: 'border-box',
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20,
       }}>
