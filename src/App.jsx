@@ -260,7 +260,7 @@ export default function App() {
       const isEqual   = diff === 0;
       const accent    = isEqual ? C.navy : isCheaper ? '#166534' : '#991B1B';
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {/* Category rows */}
           {Object.entries(catTotals).map(([id, total], i) => (
             <button
@@ -269,31 +269,31 @@ export default function App() {
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 background: 'rgba(27,45,90,0.1)', border: '2px solid rgba(27,45,90,0.2)',
-                borderRadius: 7, padding: '8px 12px', cursor: 'pointer',
+                borderRadius: 7, padding: '10px 14px', cursor: 'pointer',
                 transition: 'background 0.15s',
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(27,45,90,0.2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(27,45,90,0.1)'}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: CHART_COLORS[i], flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>{CATEGORY_LABELS[id]}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 13, height: 13, borderRadius: '50%', background: CHART_COLORS[i], flexShrink: 0 }} />
+                <span style={{ fontSize: 16, fontWeight: 700, color: C.navy }}>{CATEGORY_LABELS[id]}</span>
               </div>
-              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: C.navy, fontSize: 13 }}>${fmt(total)}</span>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: C.navy, fontSize: 16 }}>${fmt(total)}</span>
             </button>
           ))}
 
           {/* Reusability + comparison in one compact block */}
           <div style={{
-            marginTop: 4, padding: '8px 12px',
+            marginTop: 2, padding: '10px 14px',
             background: 'rgba(27,45,90,0.08)', borderRadius: 7,
-            display: 'flex', flexDirection: 'column', gap: 4,
+            display: 'flex', flexDirection: 'column', gap: 6,
           }}>
             {[
-              { label: 'Reusability %',  val: `${reusePct}%`,          color: C.navy    },
+              { label: 'Reusability %',  val: `${reusePct}%`,            color: C.navy    },
               { label: 'Recoverable',    val: `-$${fmt(reusableAmount)}`, color: '#2A7A2A' },
             ].map(r => (
-              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15 }}>
                 <span style={{ color: C.navy, opacity: 0.7 }}>{r.label}</span>
                 <span style={{ fontFamily: 'monospace', color: r.color, fontWeight: 600 }}>{r.val}</span>
               </div>
@@ -301,8 +301,8 @@ export default function App() {
           </div>
 
           {/* vs Current Solution */}
-          <div style={{ marginTop: 2, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <p style={{ margin: 0, fontSize: 10, fontWeight: 700, color: C.navy, opacity: 0.45,
+          <div style={{ marginTop: 2, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: C.navy, opacity: 0.45,
               textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               vs Current Solution
             </p>
@@ -310,7 +310,7 @@ export default function App() {
               { label: 'Current Solution',   val: `$${fmt(CURRENT_SOLUTION_COST)}` },
               { label: 'New Solution (net)',  val: `$${fmt(netTotal)}`              },
             ].map(r => (
-              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15 }}>
                 <span style={{ color: C.navy, opacity: 0.7 }}>{r.label}</span>
                 <span style={{ fontFamily: 'monospace', color: C.navy, fontWeight: 600 }}>{r.val}</span>
               </div>
@@ -319,21 +319,21 @@ export default function App() {
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               background: isEqual ? 'rgba(27,45,90,0.1)' : isCheaper ? 'rgba(22,101,52,0.15)' : 'rgba(153,27,27,0.15)',
               border: `2px solid ${isEqual ? 'rgba(27,45,90,0.2)' : isCheaper ? 'rgba(22,101,52,0.4)' : 'rgba(153,27,27,0.4)'}`,
-              borderRadius: 7, padding: '8px 12px',
+              borderRadius: 7, padding: '10px 14px',
             }}>
               <div>
-                <p style={{ margin: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
                   letterSpacing: '0.07em', color: accent, opacity: 0.8 }}>
                   {isEqual ? 'No difference' : isCheaper ? 'Savings' : 'Costs more'}
                 </p>
-                <p style={{ margin: '2px 0 0', fontSize: 18, fontWeight: 900, fontFamily: 'monospace', color: accent, lineHeight: 1 }}>
+                <p style={{ margin: '2px 0 0', fontSize: 22, fontWeight: 900, fontFamily: 'monospace', color: accent, lineHeight: 1 }}>
                   {isCheaper ? '−' : isEqual ? '' : '+'}{`$${fmt(Math.abs(diff))}`}
                 </p>
               </div>
               <span style={{
-                width: 32, height: 32, borderRadius: '50%', background: accent, color: '#fff',
+                width: 36, height: 36, borderRadius: '50%', background: accent, color: '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, flexShrink: 0,
+                fontSize: 18, flexShrink: 0,
               }}>
                 {isEqual ? '=' : isCheaper ? '↓' : '↑'}
               </span>
