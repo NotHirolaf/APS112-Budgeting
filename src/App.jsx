@@ -61,7 +61,6 @@ const FIELDS = {
     'Electricity / Power Bill',
     'Gas Bill',
     'Water Bill',
-    'Incidental Fees',
   ],
 };
 
@@ -80,6 +79,7 @@ const makeEmpty = () => ({
   utilities:       Object.fromEntries(FIELDS.utilities.map(f => [f, ''])),
   reusability:     '',
   projectLifespan: '',
+  incidentalPct:   '',
 });
 
 const parse = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
@@ -182,7 +182,10 @@ export default function App() {
     utilities: Object.values(costs.utilities).reduce((s, v) => s + parse(v), 0),
   }), [costs]);
 
-  const grossTotal     = useMemo(() => Object.values(catTotals).reduce((s, v) => s + v, 0), [catTotals]);
+  const subtotal       = useMemo(() => Object.values(catTotals).reduce((s, v) => s + v, 0), [catTotals]);
+  const incidentalPct  = Math.min(100, Math.max(0, parse(costs.incidentalPct)));
+  const incidentalAmount = subtotal * (incidentalPct / 100);
+  const grossTotal     = subtotal + incidentalAmount;
   const reusePct       = Math.min(100, Math.max(0, parse(costs.reusability)));
   const reusableAmount = grossTotal * (reusePct / 100);
   const netTotal       = grossTotal - reusableAmount;
@@ -198,6 +201,11 @@ export default function App() {
   const setLifespan = (val) => {
     if (!isNum(val)) return;
     setCosts(prev => ({ ...prev, projectLifespan: val }));
+  };
+  const setIncidentalPct = (val) => {
+    if (!isNum(val)) return;
+    if (val !== '' && parseFloat(val) > 100) return;
+    setCosts(prev => ({ ...prev, incidentalPct: val }));
   };
   const generateGraph = () => {
     const data = costModelData;
@@ -505,19 +513,60 @@ export default function App() {
     // Regular category — 2-column grid
     const fields = FIELDS[activeTab] ?? [];
     return (
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '20px 24px',
-      }}>
-        {fields.map(field => (
-          <Field
-            key={field}
-            label={field}
-            value={costs[activeTab][field]}
-            onChange={val => setField(activeTab, field, val)}
-          />
-        ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '20px 24px',
+        }}>
+          {fields.map(field => (
+            <Field
+              key={field}
+              label={field}
+              value={costs[activeTab][field]}
+              onChange={val => setField(activeTab, field, val)}
+            />
+          ))}
+        </div>
+
+        {/* Incidental Fees % — only shown on Utilities tab */}
+        {activeTab === 'utilities' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <label style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>
+              Incidental Fees (% of subtotal)
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ flex: 1, display: 'flex', borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={costs.incidentalPct}
+                  onChange={e => setIncidentalPct(e.target.value)}
+                  placeholder="0"
+                  style={{
+                    flex: 1, background: C.inputBg, border: 'none',
+                    padding: '10px 14px', fontSize: 18, fontWeight: 700,
+                    color: C.navy, fontFamily: 'monospace', outline: 'none',
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: 24, fontWeight: 900, color: C.navy }}>%</span>
+            </div>
+            {/* Progress bar */}
+            <div style={{ height: 8, background: 'rgba(27,45,90,0.2)', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{
+                width: `${incidentalPct}%`, height: '100%',
+                background: C.navy, borderRadius: 4, transition: 'width 0.3s',
+              }} />
+            </div>
+            {incidentalPct > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: C.navy, opacity: 0.75 }}>
+                <span>Incidental amount</span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>${fmt(incidentalAmount)}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
