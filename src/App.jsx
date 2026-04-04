@@ -36,13 +36,10 @@ const FIELDS = {
   materials: [
     'Material Costs - Above Ground',
     'Material Costs - Underground',
-    'Materials Used Within Tools',
     'Machinery',
     'Tool Costs',
-    'Manufacturing Fees',
   ],
   labour: [
-    'General Labour Costs',
     'Salaries: Construction Workers',
     'Salaries: Engineers',
     'Salaries: Project Managers',
@@ -50,11 +47,6 @@ const FIELDS = {
   ],
   taxes: [
     'Insurance',
-    'HST Taxes',
-    'Taxes - Deductible',
-    'Taxes - Payable',
-    'Property Taxes',
-    'Shipping / Import-Export Fees',
     'Licensing Fees',
   ],
   utilities: [
@@ -80,6 +72,9 @@ const makeEmpty = () => ({
   reusability:     '',
   projectLifespan: '',
   incidentalPct:   '',
+  hstPct:          '',
+  shippingPct:     '',
+  labourTaxPct:    '',
 });
 
 const parse = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
@@ -182,10 +177,16 @@ export default function App() {
     utilities: Object.values(costs.utilities).reduce((s, v) => s + parse(v), 0),
   }), [costs]);
 
-  const subtotal       = useMemo(() => Object.values(catTotals).reduce((s, v) => s + v, 0), [catTotals]);
-  const incidentalPct  = Math.min(100, Math.max(0, parse(costs.incidentalPct)));
+  const subtotal        = useMemo(() => Object.values(catTotals).reduce((s, v) => s + v, 0), [catTotals]);
+  const hstPct          = Math.min(100, Math.max(0, parse(costs.hstPct)));
+  const shippingPct     = Math.min(100, Math.max(0, parse(costs.shippingPct)));
+  const labourTaxPct    = Math.min(100, Math.max(0, parse(costs.labourTaxPct)));
+  const incidentalPct   = Math.min(100, Math.max(0, parse(costs.incidentalPct)));
+  const hstAmount       = catTotals.materials * (hstPct / 100);
+  const shippingAmount  = catTotals.materials * (shippingPct / 100);
+  const labourTaxAmount = catTotals.labour * (labourTaxPct / 100);
   const incidentalAmount = subtotal * (incidentalPct / 100);
-  const grossTotal     = subtotal + incidentalAmount;
+  const grossTotal      = subtotal + hstAmount + shippingAmount + labourTaxAmount + incidentalAmount;
   const reusePct       = Math.min(100, Math.max(0, parse(costs.reusability)));
   const reusableAmount = grossTotal * (reusePct / 100);
   const netTotal       = grossTotal - reusableAmount;
@@ -206,6 +207,11 @@ export default function App() {
     if (!isNum(val)) return;
     if (val !== '' && parseFloat(val) > 100) return;
     setCosts(prev => ({ ...prev, incidentalPct: val }));
+  };
+  const setPct = (key) => (val) => {
+    if (!isNum(val)) return;
+    if (val !== '' && parseFloat(val) > 100) return;
+    setCosts(prev => ({ ...prev, [key]: val }));
   };
   const generateGraph = () => {
     const data = costModelData;
@@ -529,35 +535,47 @@ export default function App() {
           ))}
         </div>
 
-        {/* Incidental Fees % — only shown on Utilities tab */}
+        {/* Taxes & Fees — percentage add-ons */}
+        {activeTab === 'taxes' && <>
+          {[
+            { label: 'HST Tax (% of materials)',               key: 'hstPct',      val: costs.hstPct,      pct: hstPct,      amt: hstAmount      },
+            { label: 'Shipping / Import-Export (% of materials)', key: 'shippingPct', val: costs.shippingPct, pct: shippingPct, amt: shippingAmount },
+            { label: 'Labour Tax (% of labour)',               key: 'labourTaxPct', val: costs.labourTaxPct, pct: labourTaxPct, amt: labourTaxAmount },
+          ].map(({ label, key, val, pct, amt }) => (
+            <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{label}</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ flex: 1, display: 'flex', borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
+                  <input type="text" inputMode="decimal" value={val} onChange={e => setPct(key)(e.target.value)} placeholder="0"
+                    style={{ flex: 1, background: C.inputBg, border: 'none', padding: '10px 14px', fontSize: 18, fontWeight: 700, color: C.navy, fontFamily: 'monospace', outline: 'none' }} />
+                </div>
+                <span style={{ fontSize: 24, fontWeight: 900, color: C.navy }}>%</span>
+              </div>
+              <div style={{ height: 8, background: 'rgba(27,45,90,0.2)', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: C.navy, borderRadius: 4, transition: 'width 0.3s' }} />
+              </div>
+              {pct > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: C.navy, opacity: 0.75 }}>
+                  <span>Amount added</span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>${fmt(amt)}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </>}
+
         {activeTab === 'utilities' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <label style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>
-              Incidental Fees (% of subtotal)
-            </label>
+            <label style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>Incidental Fees (% of subtotal)</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ flex: 1, display: 'flex', borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={costs.incidentalPct}
-                  onChange={e => setIncidentalPct(e.target.value)}
-                  placeholder="0"
-                  style={{
-                    flex: 1, background: C.inputBg, border: 'none',
-                    padding: '10px 14px', fontSize: 18, fontWeight: 700,
-                    color: C.navy, fontFamily: 'monospace', outline: 'none',
-                  }}
-                />
+                <input type="text" inputMode="decimal" value={costs.incidentalPct} onChange={e => setIncidentalPct(e.target.value)} placeholder="0"
+                  style={{ flex: 1, background: C.inputBg, border: 'none', padding: '10px 14px', fontSize: 18, fontWeight: 700, color: C.navy, fontFamily: 'monospace', outline: 'none' }} />
               </div>
               <span style={{ fontSize: 24, fontWeight: 900, color: C.navy }}>%</span>
             </div>
-            {/* Progress bar */}
             <div style={{ height: 8, background: 'rgba(27,45,90,0.2)', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{
-                width: `${incidentalPct}%`, height: '100%',
-                background: C.navy, borderRadius: 4, transition: 'width 0.3s',
-              }} />
+              <div style={{ width: `${incidentalPct}%`, height: '100%', background: C.navy, borderRadius: 4, transition: 'width 0.3s' }} />
             </div>
             {incidentalPct > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: C.navy, opacity: 0.75 }}>
@@ -889,7 +907,7 @@ export default function App() {
             style={{
               background: C.navy, borderRadius: 16,
               padding: '28px 24px 20px',
-              width: '100%', maxWidth: 1100, maxHeight: '90vh',
+              width: '96vw', height: '92vh',
               boxShadow: '0 8px 48px rgba(0,0,0,0.6)',
               display: 'flex', flexDirection: 'column', gap: 12,
               position: 'relative',
@@ -912,7 +930,7 @@ export default function App() {
             </button>
 
             {activeTab === 'costmodel' ? (
-              <ResponsiveContainer width="100%" height={500}>
+              <ResponsiveContainer width="100%" height="90%">
                 <LineChart data={committedModelData.slice(0, visibleCount)} margin={{ top: 12, right: 32, bottom: 32, left: 16 }}>
                   <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
                   <XAxis
@@ -941,7 +959,7 @@ export default function App() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <ResponsiveContainer width="100%" height={500}>
+              <ResponsiveContainer width="100%" height="90%">
                 <PieChart>
                   <Pie data={chartData} cx="50%" cy="50%"
                     innerRadius={100} outerRadius={170}
