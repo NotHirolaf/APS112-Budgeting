@@ -6,7 +6,7 @@ import {
 import { RefreshCw, Maximize2, X } from 'lucide-react';
 
 // ─── Current solution cost (hardcoded) — edit this value to update the comparison
-const CURRENT_SOLUTION_COST = 0;
+const CURRENT_SOLUTION_COST = 3000;
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
